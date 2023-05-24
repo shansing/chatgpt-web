@@ -18,7 +18,7 @@ function goHome() {
           500
         </h2>
         <p class="text-base text-center text-slate-500 dark:text-slate-500">
-          Server error
+					Please wait a moment and try using or re-opening Firefox / Chrome, re-enter the URL, and input the correct account.
         </p>
         <div class="flex items-center justify-center text-center">
           <Icon500 class="w-[300px]" />
