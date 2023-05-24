@@ -9,11 +9,12 @@ export interface SettingsState {
 }
 
 export function defaultSetting(): SettingsState {
-  return {
-    systemMessage: 'You are ChatGPT, a large language model trained by OpenAI. Follow the user\'s instructions carefully. Respond using markdown.',
-    temperature: 0.8,
-    top_p: 1,
-  }
+	const currentDate = new Date().toISOString().split('T')[0]
+	return {
+		systemMessage: `You are ChatGPT, a large language model trained by OpenAI. Knowledge cutoff: 2021-09-01 Current date: ${currentDate}`,
+		temperature: 1,
+		top_p: 1,
+	}
 }
 
 export function getLocalState(): SettingsState {
