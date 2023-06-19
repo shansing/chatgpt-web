@@ -57,7 +57,7 @@ onMounted(() => {
 					! 本站由私人搭建托管，特性与账号可能随时变动。
         </p>
         <p>
-					最近更新：修改默认的 systemMessage、temperature 以期获得 ChatGPT 般尽可能详尽的回答。
+					最近更新：切换至 gpt-3.5-turbo-16k-0613 获得更大上下文。
         </p>
       </div>
       <p>{{ $t("setting.api") }}：{{ config?.apiModel ?? '-' }}</p>
