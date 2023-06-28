@@ -60,19 +60,19 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 		if (isNotEmptyString(MAX_TOKEN_TIMES)) {
 			const maxTokenTimes = parseInt(MAX_TOKEN_TIMES);
 			options.maxModelTokens = metaMaxModelTokens * maxTokenTimes
-			options.maxResponseTokens = metaMaxModelTokens * maxTokenTimes
+			options.maxResponseTokens = metaMaxResponseTokens * maxTokenTimes
 		} else if (lowercaseModel.includes('16k')) {
 			// if use 16k model
 			options.maxModelTokens = metaMaxModelTokens * 4
-			options.maxResponseTokens = metaMaxModelTokens * 4
+			options.maxResponseTokens = metaMaxResponseTokens * 4
 		} else if (lowercaseModel.includes('32k')) {
 			// if use 32k model
 			options.maxModelTokens = metaMaxModelTokens * 8
-			options.maxResponseTokens = metaMaxModelTokens * 8
+			options.maxResponseTokens = metaMaxResponseTokens * 8
 		} else if (lowercaseModel.includes('64k')) {
 			// if use 32k model
 			options.maxModelTokens = metaMaxModelTokens * 16
-			options.maxResponseTokens = metaMaxModelTokens * 16
+			options.maxResponseTokens = metaMaxResponseTokens * 16
 		}
 
     if (isNotEmptyString(OPENAI_API_BASE_URL))
