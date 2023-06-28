@@ -39,6 +39,7 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 
   if (isNotEmptyString(process.env.OPENAI_API_KEY)) {
     const OPENAI_API_BASE_URL = process.env.OPENAI_API_BASE_URL
+		const MAX_TOKEN_TIMES = process.env.MAX_TOKEN_TIMES
 
     const options: ChatGPTAPIOptions = {
       apiKey: process.env.OPENAI_API_KEY,
@@ -46,21 +47,32 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
       debug: !disableDebug,
     }
 
+		const metaMaxModelTokens = 4096
+		const metaMaxResponseTokens = 1024
+
 		const lowercaseModel= model.toLowerCase()
 		// increase max token limit if use gpt-4
 		if (lowercaseModel.includes('gpt-4')) {
-			options.maxModelTokens = 8192
-			options.maxResponseTokens = 2048
+			options.maxModelTokens = metaMaxModelTokens * 2
+			options.maxResponseTokens = metaMaxResponseTokens * 2
 		}
 
-		if (lowercaseModel.includes('32k')) {
-			// if use 32k model
-			options.maxModelTokens = 32768
-			options.maxResponseTokens = 8192
+		if (isNotEmptyString(MAX_TOKEN_TIMES)) {
+			const maxTokenTimes = parseInt(MAX_TOKEN_TIMES);
+			options.maxModelTokens = metaMaxModelTokens * maxTokenTimes
+			options.maxResponseTokens = metaMaxModelTokens * maxTokenTimes
 		} else if (lowercaseModel.includes('16k')) {
 			// if use 16k model
-			options.maxModelTokens = 16384
-			options.maxResponseTokens = 4196
+			options.maxModelTokens = metaMaxModelTokens * 4
+			options.maxResponseTokens = metaMaxModelTokens * 4
+		} else if (lowercaseModel.includes('32k')) {
+			// if use 32k model
+			options.maxModelTokens = metaMaxModelTokens * 8
+			options.maxResponseTokens = metaMaxModelTokens * 8
+		} else if (lowercaseModel.includes('64k')) {
+			// if use 32k model
+			options.maxModelTokens = metaMaxModelTokens * 16
+			options.maxResponseTokens = metaMaxModelTokens * 16
 		}
 
     if (isNotEmptyString(OPENAI_API_BASE_URL))
