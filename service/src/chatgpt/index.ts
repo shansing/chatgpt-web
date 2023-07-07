@@ -263,11 +263,10 @@ function decreaseUserQuota(username : string, delta : Decimal) {
 }
 function prePay(username, res) {
 	if (quotaEnabled && username) {
-		if (!decreaseUserQuota(username, maxPrice)) {
-			globalThis.console.error(username + "'s quota is not enough, need " + maxPrice.toFixed());
-			res.write(JSON.stringify({ type: 'Fail', message: '[Shansing Helper] 预扣除余额不足，需要 ' + maxPrice.toFixed() }))
-			return;
-		}
+		let status = decreaseUserQuota(username, maxPrice)
+		globalThis.console.error(username + "'s quota is not enough, need " + maxPrice.toFixed());
+		res.write(JSON.stringify({ type: 'Fail', message: '[Shansing Helper] 预扣除余额不足，需要 ' + maxPrice.toFixed() }))
+		return status
 	}
 }
 function payback(username, result) {

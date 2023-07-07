@@ -31,7 +31,9 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
   try {
     const { prompt, options = {}, systemMessage, temperature, top_p } = req.body as RequestProps
     let firstChunk = true
-		prePay(username, res)
+		if (!prePay(username, res)) {
+			return;
+		}
     let result = await chatReplyProcess({
       message: prompt,
       lastContext: options,
