@@ -1,7 +1,7 @@
 import express from 'express'
 import type { RequestProps } from './types'
 import type { ChatMessage } from './chatgpt'
-import { chatConfig, chatReplyProcess, currentModel } from './chatgpt'
+import { chatReplyProcess, chatConfig, currentModel, readUserQuota, prePay, payback } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
@@ -19,13 +19,20 @@ app.all('*', (_, res, next) => {
   next()
 })
 
+function getUsernameFromHttpBasicAuth(req) {
+	const authHeader = req.headers['authorization'] || '';  // 获取 Authorization 头部字段
+	const auth = Buffer.from(authHeader.split(' ')[1] || '', 'base64').toString();  // 解码 Base64
+	return  auth.split(':')[0];  // 提取用户名
+}
+
 router.post('/chat-process', [auth, limiter], async (req, res) => {
   res.setHeader('Content-type', 'application/octet-stream')
-
+	const username = getUsernameFromHttpBasicAuth(req);
   try {
     const { prompt, options = {}, systemMessage, temperature, top_p } = req.body as RequestProps
     let firstChunk = true
-    await chatReplyProcess({
+		prePay(username, res)
+    let result = await chatReplyProcess({
       message: prompt,
       lastContext: options,
       process: (chat: ChatMessage) => {
@@ -36,7 +43,8 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
       temperature,
       top_p,
     })
-  }
+		payback(username, result)
+	}
   catch (error) {
     res.write(JSON.stringify(error))
   }
@@ -45,9 +53,14 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
   }
 })
 
+
+
 router.post('/config', auth, async (req, res) => {
   try {
     const response = await chatConfig()
+		const username = getUsernameFromHttpBasicAuth(req);
+		if (username)
+			response.data.userQuota = username + " / " + readUserQuota(username).toFixed()
     res.send(response)
   }
   catch (error) {

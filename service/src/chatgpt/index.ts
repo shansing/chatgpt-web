@@ -9,6 +9,8 @@ import { sendResponse } from '../utils'
 import { isNotEmptyString } from '../utils/is'
 import type { ApiModel, ChatContext, ChatGPTUnofficialProxyAPIOptions, ModelConfig } from '../types'
 import type { RequestOptions, SetProxyOptions, UsageResponse } from './types'
+import { Decimal } from "decimal.js";
+import { readFileSync, writeFileSync } from "fs";
 
 const { HttpsProxyAgent } = httpsProxyAgent
 
@@ -39,7 +41,7 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 
   if (isNotEmptyString(process.env.OPENAI_API_KEY)) {
     const OPENAI_API_BASE_URL = process.env.OPENAI_API_BASE_URL
-		const MAX_TOKEN_TIMES = process.env.MAX_TOKEN_TIMES
+		const MAX_TOKEN_TIMES = process.env.SHANSING_MAX_TOKEN_TIMES
 
     const options: ChatGPTAPIOptions = {
       apiKey: process.env.OPENAI_API_KEY,
@@ -70,7 +72,7 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 			options.maxModelTokens = metaMaxModelTokens * 8
 			options.maxResponseTokens = metaMaxResponseTokens * 8
 		} else if (lowercaseModel.includes('64k')) {
-			// if use 32k model
+			// if use 64k model
 			options.maxModelTokens = metaMaxModelTokens * 16
 			options.maxResponseTokens = metaMaxResponseTokens * 16
 		}
@@ -229,6 +231,63 @@ function currentModel(): ApiModel {
   return apiModel
 }
 
+const quotaPath : string = process.env.SHANSING_QUOTA_PATH
+const promptTokenPrice : Decimal = !isNaN(+process.env.SHANSING_PROMPT_TOKEN_PRICE) ? new Decimal(process.env.SHANSING_PROMPT_TOKEN_PRICE) : null
+const completionTokenPrice : Decimal = !isNaN(+process.env.SHANSING_COMPLETION_TOKEN_PRICE) ? new Decimal(process.env.SHANSING_COMPLETION_TOKEN_PRICE) : null
+const promptTokenMaximumChargeableCount : number = !isNaN(+process.env.SHANSING_PROMPT_TOKEN_MAXIMUM_CHARGEABLE_COUNT) ? +process.env.SHANSING_PROMPT_TOKEN_MAXIMUM_CHARGEABLE_COUNT : null
+const completionTokenMaximumChargeableCount : number = !isNaN(+process.env.SHANSING_COMPLETION_TOKEN_MAXIMUM_CHARGEABLE_COUNT) ? +process.env.SHANSING_COMPLETION_TOKEN_MAXIMUM_CHARGEABLE_COUNT : null
+const quotaEnabled : boolean = quotaPath != null && promptTokenPrice != null && completionTokenPrice != null && promptTokenMaximumChargeableCount != null && completionTokenMaximumChargeableCount != null
+const maxPrice = quotaEnabled ? (promptTokenPrice.mul(promptTokenMaximumChargeableCount)).plus(completionTokenPrice.mul(completionTokenMaximumChargeableCount)) : null
+function readUserQuota(username : string) : Decimal {
+	let fileContent = readFileSync(quotaPath + '/' + username, 'utf8')
+	try {
+		return new Decimal(fileContent)
+	} catch (error) {
+		globalThis.console.error(username + "'s quota is not number", error);
+		throw error
+	}
+}
+function increaseUserQuota(username : string, delta : Decimal) {
+	let quota = readUserQuota(username)
+	// globalThis.console.log(username + '\'s old quota: ' + quota.toFixed())
+	let newQuota = quota.plus(delta)
+	// globalThis.console.log(username + '\'s new quota: ' + newQuota.toFixed())
+	if (newQuota.lt(0)) {
+		return false;
+	}
+	writeFileSync(quotaPath + '/' + username, newQuota.toFixed(), 'utf8')
+	return true;
+}
+function decreaseUserQuota(username : string, delta : Decimal) {
+	return increaseUserQuota(username, new Decimal(-1).mul(delta))
+}
+function prePay(username, res) {
+	if (quotaEnabled && username) {
+		if (!decreaseUserQuota(username, maxPrice)) {
+			globalThis.console.error(username + "'s quota is not enough, need " + maxPrice.toFixed());
+			res.write(JSON.stringify({ type: 'Fail', message: '[Shansing Helper] 预扣除余额不足，需要 ' + maxPrice.toFixed() }))
+			return;
+		}
+	}
+}
+function payback(username, result) {
+	if (username && quotaEnabled) {
+		let plus;
+		// @ts-ignore
+		if (result && result.data && result.data.detail && result.data.detail.usage) {
+			// @ts-ignore
+			let usage = result.data.detail.usage;
+			//退还费用
+			let thisBilling = (promptTokenPrice.mul(usage.prompt_tokens)).plus(completionTokenPrice.mul(usage.completion_tokens))
+			plus = maxPrice.sub(thisBilling)
+		} else {
+			//退还所有费用
+			plus = maxPrice
+		}
+		increaseUserQuota(username, plus)
+	}
+}
+
 export type { ChatContext, ChatMessage }
 
-export { chatReplyProcess, chatConfig, currentModel }
+export { chatReplyProcess, chatConfig, currentModel, readUserQuota, prePay, payback }

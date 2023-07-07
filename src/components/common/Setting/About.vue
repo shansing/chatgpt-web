@@ -12,6 +12,7 @@ interface ConfigState {
   socksProxy?: string
   httpsProxy?: string
   usage?: string
+	userQuota?: string
 }
 
 const authStore = useAuthStore()
@@ -57,7 +58,7 @@ onMounted(() => {
 					! 本站由私人搭建托管，特性与账号可能随时变动。
         </p>
         <p>
-					最近更新：GPT-4 开放了！切换至 gpt-4-0613。
+					最近更新：切换至 GPT-4，费用太高增加付费功能。
         </p>
       </div>
       <p>{{ $t("setting.api") }}：{{ config?.apiModel ?? '-' }}</p>
@@ -70,6 +71,7 @@ onMounted(() => {
       <p>{{ $t("setting.timeout") }}：{{ config?.timeoutMs ?? '-' }}</p>
       <p>{{ $t("setting.socks") }}：{{ config?.socksProxy ?? '-' }}</p>
       <p>{{ $t("setting.httpsProxy") }}：{{ config?.httpsProxy ?? '-' }}</p>
+			<p>用户余额：{{ config?.userQuota ?? '-' }}</p>
     </div>
   </NSpin>
 </template>
