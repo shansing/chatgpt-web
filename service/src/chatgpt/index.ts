@@ -147,6 +147,9 @@ async function chatReplyProcess(options: RequestOptions) {
 				}
 			}
 		}
+		if (modelChoices && modelName == null) {
+			return sendResponse({ type: 'Fail', message: '[Shansing Helper] 禁止非法操作：未选取模型' })
+		}
     const response = await processApi.sendMessage(message, {
       ...options,
       onProgress: (partialResponse) => {
