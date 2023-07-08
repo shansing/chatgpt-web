@@ -41,6 +41,7 @@ export function fetchChatAPIProcess<T = any>(
       systemMessage: settingStore.systemMessage,
       temperature: settingStore.temperature,
       top_p: settingStore.top_p,
+			modelName: settingStore.modelName,
     }
   }
 

@@ -6,6 +6,7 @@ export interface SettingsState {
   systemMessage: string
   temperature: number
   top_p: number
+	modelName: string
 }
 
 export function defaultSetting(): SettingsState {
@@ -14,6 +15,7 @@ export function defaultSetting(): SettingsState {
 		systemMessage: `You are ChatGPT, a large language model trained by OpenAI. Knowledge cutoff: 2021-09-01 Current date: ${currentDate}`,
 		temperature: 1,
 		top_p: 1,
+		modelName: 'GPT-4',
 	}
 }
 

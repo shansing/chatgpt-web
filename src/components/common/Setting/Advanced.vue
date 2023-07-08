@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { NButton, NInput, NSlider, useMessage } from 'naive-ui'
+import {NButton, NInput, NSelect, NSlider, useMessage} from 'naive-ui'
 import { useSettingStore } from '@/store'
 import type { SettingsState } from '@/store/modules/settings/helper'
 import { t } from '@/locales'
@@ -14,6 +14,13 @@ const systemMessage = ref(settingStore.systemMessage ?? '')
 const temperature = ref(settingStore.temperature ?? 0.5)
 
 const top_p = ref(settingStore.top_p ?? 1)
+
+const modelName = ref(settingStore.modelName ?? 'GPT-4')
+
+const modelNameOptions: { label: string; key: string; value: string }[] = [
+	{ label: 'GPT-4', key: 'GPT-4', value: 'GPT-4' },
+	{ label: 'GPT-3.5', key: 'GPT-3.5', value: 'GPT-3.5' },
+]
 
 function updateSettings(options: Partial<SettingsState>) {
   settingStore.updateSetting(options)
@@ -59,6 +66,18 @@ function handleReset() {
           {{ $t('common.save') }}
         </NButton>
       </div>
+			<div class="flex items-center space-x-4">
+				<span class="flex-shrink-0 w-[120px]">选择模型</span>
+				<div class="flex-1">
+					<NSelect
+						:options="modelNameOptions"
+						v-model:value="modelName"
+					/>
+				</div>
+				<NButton size="tiny" text type="primary" @click="updateSettings({ modelName })">
+					{{ $t('common.save') }}
+				</NButton>
+			</div>
       <div class="flex items-center space-x-4">
         <span class="flex-shrink-0 w-[120px]">&nbsp;</span>
         <NButton size="small" @click="handleReset">

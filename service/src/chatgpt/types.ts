@@ -9,6 +9,7 @@ export interface RequestOptions {
   temperature?: number
   top_p?: number
   username?: string
+	modelName?: string
 }
 
 export interface SetProxyOptions {
