@@ -138,17 +138,17 @@ async function chatReplyProcess(options: RequestOptions) {
 		let modelChoice = null;
 		if (modelName && modelChoices) {
 			modelChoice = modelChoices.find(choice => choice.name === modelName);
-			if (modelChoice) {
-				processApi = modelChoice.api
-				options.completionParams.model = modelChoice.model
-				if (!prePay(username, modelChoice)) {
-					globalThis.console.error(username + "'s quota is not enough, need " + modelChoice.maxPrice);
-					return sendResponse({ type: 'Fail', message: '[Shansing Helper] 预扣除余额不足，需要 ' + modelChoice.maxPrice })
-				}
-			}
 		}
-		if (modelChoices && modelName == null) {
-			return sendResponse({ type: 'Fail', message: '[Shansing Helper] 禁止非法操作：未选取模型' })
+		if (modelChoices && modelChoice == null) {
+			return sendResponse({ type: 'Fail', message: '[Shansing Helper] 模型选取非法' })
+		}
+		if (modelChoice) {
+			processApi = modelChoice.api
+			options.completionParams.model = modelChoice.model
+			if (!prePay(username, modelChoice)) {
+				globalThis.console.error(username + "'s quota is not enough, need " + modelChoice.maxPrice);
+				return sendResponse({ type: 'Fail', message: '[Shansing Helper] 预扣除余额不足，需要 ' + modelChoice.maxPrice })
+			}
 		}
     const response = await processApi.sendMessage(message, {
       ...options,
