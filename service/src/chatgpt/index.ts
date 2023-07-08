@@ -68,7 +68,7 @@ const quotaEnabled : boolean = quotaPath != null && modelChoices != null
 				let choiceOptions: ChatGPTAPIOptions = JSON.parse(JSON.stringify(options))
 				let maxModelTokens
 				let maxResponseTokens
-				let lowercaseModel= model.toLowerCase()
+				let lowercaseModel = modelChoice.model.toLowerCase()
 				if (isNotEmptyString(MAX_TOKEN_TIMES)) {
 					const maxTokenTimes = parseInt(MAX_TOKEN_TIMES);
 					maxModelTokens = metaMaxModelTokens * maxTokenTimes
