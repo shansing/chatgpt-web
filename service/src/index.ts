@@ -1,7 +1,7 @@
 import express from 'express'
 import type { RequestProps } from './types'
 import type { ChatMessage } from './chatgpt'
-import { chatReplyProcess, chatConfig, currentModel, readUserQuota, prePay, payback } from './chatgpt'
+import { chatReplyProcess, chatConfig, currentModel, readUserQuota } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
@@ -27,13 +27,9 @@ function getUsernameFromHttpBasicAuth(req) {
 
 router.post('/chat-process', [auth, limiter], async (req, res) => {
   res.setHeader('Content-type', 'application/octet-stream')
-	const username = getUsernameFromHttpBasicAuth(req);
   try {
     const { prompt, options = {}, systemMessage, temperature, top_p } = req.body as RequestProps
     let firstChunk = true
-		if (!prePay(username, res)) {
-			return;
-		}
     let result = await chatReplyProcess({
       message: prompt,
       lastContext: options,
@@ -44,8 +40,8 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
       systemMessage,
       temperature,
       top_p,
+			username: getUsernameFromHttpBasicAuth(req),
     })
-		payback(username, result)
 	}
   catch (error) {
     res.write(JSON.stringify(error))

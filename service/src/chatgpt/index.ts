@@ -11,6 +11,7 @@ import type { ApiModel, ChatContext, ChatGPTUnofficialProxyAPIOptions, ModelConf
 import type { RequestOptions, SetProxyOptions, UsageResponse } from './types'
 import { Decimal } from "decimal.js";
 import { readFileSync, writeFileSync } from "fs";
+import {opt} from "ts-interface-checker";
 
 const { HttpsProxyAgent } = httpsProxyAgent
 
@@ -36,12 +37,37 @@ if (!isNotEmptyString(process.env.OPENAI_API_KEY) && !isNotEmptyString(process.e
 
 let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 
+const MAX_TOKEN_TIMES = process.env.SHANSING_MAX_TOKEN_TIMES
+const metaMaxModelTokens = 1024
+let maxModelTokens;
+let maxResponseTokens;
+const lowercaseModel= model.toLowerCase()
+if (isNotEmptyString(MAX_TOKEN_TIMES)) {
+	const maxTokenTimes = parseInt(MAX_TOKEN_TIMES);
+	maxModelTokens = metaMaxModelTokens * maxTokenTimes
+	maxResponseTokens = maxModelTokens / 4
+} else if (lowercaseModel.includes('16k')) {
+	maxModelTokens = metaMaxModelTokens * 16
+	maxResponseTokens = maxModelTokens / 4
+} else if (lowercaseModel.includes('32k')) {
+	maxModelTokens = metaMaxModelTokens *32
+	maxResponseTokens = maxModelTokens / 4
+} else if (lowercaseModel.includes('64k')) {
+	maxModelTokens = metaMaxModelTokens * 64
+	maxResponseTokens = maxModelTokens / 4
+} else if (lowercaseModel.includes('gpt-4')) {
+	maxModelTokens = metaMaxModelTokens * 8
+	maxResponseTokens = maxModelTokens / 4
+} else {
+	maxModelTokens = metaMaxModelTokens * 4
+	maxResponseTokens = maxModelTokens / 4
+}
+
 (async () => {
   // More Info: https://github.com/transitive-bullshit/chatgpt-api
 
   if (isNotEmptyString(process.env.OPENAI_API_KEY)) {
     const OPENAI_API_BASE_URL = process.env.OPENAI_API_BASE_URL
-		const MAX_TOKEN_TIMES = process.env.SHANSING_MAX_TOKEN_TIMES
 
     const options: ChatGPTAPIOptions = {
       apiKey: process.env.OPENAI_API_KEY,
@@ -49,33 +75,8 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
       debug: !disableDebug,
     }
 
-		const metaMaxModelTokens = 4096
-		const metaMaxResponseTokens = 1024
-
-		const lowercaseModel= model.toLowerCase()
-		// increase max token limit if use gpt-4
-		if (lowercaseModel.includes('gpt-4')) {
-			options.maxModelTokens = metaMaxModelTokens * 2
-			options.maxResponseTokens = metaMaxResponseTokens * 2
-		}
-
-		if (isNotEmptyString(MAX_TOKEN_TIMES)) {
-			const maxTokenTimes = parseInt(MAX_TOKEN_TIMES);
-			options.maxModelTokens = metaMaxModelTokens * maxTokenTimes
-			options.maxResponseTokens = metaMaxResponseTokens * maxTokenTimes
-		} else if (lowercaseModel.includes('16k')) {
-			// if use 16k model
-			options.maxModelTokens = metaMaxModelTokens * 4
-			options.maxResponseTokens = metaMaxResponseTokens * 4
-		} else if (lowercaseModel.includes('32k')) {
-			// if use 32k model
-			options.maxModelTokens = metaMaxModelTokens * 8
-			options.maxResponseTokens = metaMaxResponseTokens * 8
-		} else if (lowercaseModel.includes('64k')) {
-			// if use 64k model
-			options.maxModelTokens = metaMaxModelTokens * 16
-			options.maxResponseTokens = metaMaxResponseTokens * 16
-		}
+		options.maxModelTokens = maxModelTokens
+		options.maxResponseTokens = maxResponseTokens
 
     if (isNotEmptyString(OPENAI_API_BASE_URL))
       options.apiBaseUrl = `${OPENAI_API_BASE_URL}/v1`
@@ -101,7 +102,7 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 })()
 
 async function chatReplyProcess(options: RequestOptions) {
-  const { message, lastContext, process, systemMessage, temperature, top_p } = options
+  const { message, lastContext, process, systemMessage, temperature, top_p, username } = options
   try {
     let options: SendMessageOptions = { timeoutMs }
 
@@ -118,12 +119,17 @@ async function chatReplyProcess(options: RequestOptions) {
         options = { ...lastContext }
     }
 
+		if (!prePay(username)) {
+			globalThis.console.error(username + "'s quota is not enough, need " + maxPrice.toFixed());
+			return sendResponse({ type: 'Fail', message: '[Shansing Helper] 预扣除余额不足，需要 ' + maxPrice.toFixed() })
+		}
     const response = await api.sendMessage(message, {
       ...options,
       onProgress: (partialResponse) => {
         process?.(partialResponse)
       },
     })
+		payback(username, response)
 
     return sendResponse({ type: 'Success', data: response })
   }
@@ -234,14 +240,14 @@ function currentModel(): ApiModel {
 const quotaPath : string = process.env.SHANSING_QUOTA_PATH
 const promptTokenPrice : Decimal = !isNaN(+process.env.SHANSING_PROMPT_TOKEN_PRICE) ? new Decimal(process.env.SHANSING_PROMPT_TOKEN_PRICE) : null
 const completionTokenPrice : Decimal = !isNaN(+process.env.SHANSING_COMPLETION_TOKEN_PRICE) ? new Decimal(process.env.SHANSING_COMPLETION_TOKEN_PRICE) : null
-const promptTokenMaximumChargeableCount : number = !isNaN(+process.env.SHANSING_PROMPT_TOKEN_MAXIMUM_CHARGEABLE_COUNT) ? +process.env.SHANSING_PROMPT_TOKEN_MAXIMUM_CHARGEABLE_COUNT : null
-const completionTokenMaximumChargeableCount : number = !isNaN(+process.env.SHANSING_COMPLETION_TOKEN_MAXIMUM_CHARGEABLE_COUNT) ? +process.env.SHANSING_COMPLETION_TOKEN_MAXIMUM_CHARGEABLE_COUNT : null
-const quotaEnabled : boolean = quotaPath != null && promptTokenPrice != null && completionTokenPrice != null && promptTokenMaximumChargeableCount != null && completionTokenMaximumChargeableCount != null
-const maxPrice = quotaEnabled ? (promptTokenPrice.mul(promptTokenMaximumChargeableCount)).plus(completionTokenPrice.mul(completionTokenMaximumChargeableCount)) : null
+const quotaEnabled : boolean = quotaPath != null && promptTokenPrice != null && completionTokenPrice != null
+const maxPrice = quotaEnabled ? (promptTokenPrice.mul(maxModelTokens - maxResponseTokens)).plus(completionTokenPrice.mul(maxResponseTokens)) : null
+if (quotaEnabled)
+	globalThis.console.log('quotaEnabled!', quotaPath, 'quotaPath')
 function readUserQuota(username : string) : Decimal {
 	let fileContent = readFileSync(quotaPath + '/' + username, 'utf8')
 	try {
-		return new Decimal(fileContent)
+		return new Decimal(fileContent.trim())
 	} catch (error) {
 		globalThis.console.error(username + "'s quota is not number", error);
 		throw error
@@ -261,23 +267,17 @@ function increaseUserQuota(username : string, delta : Decimal) {
 function decreaseUserQuota(username : string, delta : Decimal) {
 	return increaseUserQuota(username, new Decimal(-1).mul(delta))
 }
-function prePay(username, res) {
+function prePay(username) {
 	if (quotaEnabled && username) {
-		let status = decreaseUserQuota(username, maxPrice)
-		if (!status) {
-			globalThis.console.error(username + "'s quota is not enough, need " + maxPrice.toFixed());
-			res.write(JSON.stringify({ type: 'Fail', message: '[Shansing Helper] 预扣除余额不足，需要 ' + maxPrice.toFixed() }))
-		}
-		return status
+		// globalThis.console.log('prepay:', 'username', username, 'maxPrice', maxPrice)
+		return decreaseUserQuota(username, maxPrice)
 	}
 }
-function payback(username, result) {
+function payback(username, response : ChatMessage) {
 	if (username && quotaEnabled) {
 		let plus;
-		// @ts-ignore
-		if (result && result.data && result.data.detail && result.data.detail.usage) {
-			// @ts-ignore
-			let usage = result.data.detail.usage;
+		if (response && response.detail && response.detail.usage) {
+			let usage = response.detail.usage;
 			//退还费用
 			let thisBilling = (promptTokenPrice.mul(usage.prompt_tokens)).plus(completionTokenPrice.mul(usage.completion_tokens))
 			plus = maxPrice.sub(thisBilling)
@@ -285,10 +285,11 @@ function payback(username, result) {
 			//退还所有费用
 			plus = maxPrice
 		}
+		// globalThis.console.log('payback:', 'username', username, 'plus', plus)
 		increaseUserQuota(username, plus)
 	}
 }
 
 export type { ChatContext, ChatMessage }
 
-export { chatReplyProcess, chatConfig, currentModel, readUserQuota, prePay, payback }
+export { chatReplyProcess, chatConfig, currentModel, readUserQuota }

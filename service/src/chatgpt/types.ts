@@ -8,6 +8,7 @@ export interface RequestOptions {
   systemMessage?: string
   temperature?: number
   top_p?: number
+  username?: string
 }
 
 export interface SetProxyOptions {
