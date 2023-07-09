@@ -96,6 +96,5 @@ export default {
 		userQuota: '用户余额',
 		modelNameOption: '选择模型',
 		monthlyUsage: 'API 月用量',
-		timeoutMs: '超时（毫秒）',
 	},
 }

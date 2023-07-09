@@ -96,6 +96,5 @@ export default {
 		userQuota: '用戶配額',
 		modelNameOption: '选取模型',
 		monthlyUsage: 'API 月使用',
-		timeoutMs: '超時（毫秒）',
 	},
 }
