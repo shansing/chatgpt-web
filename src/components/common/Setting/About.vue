@@ -52,7 +52,7 @@ onMounted(() => {
 						class="text-blue-600 dark:text-blue-500"
 						href="https://openai.com"
 						target="_blank"
-					>OpenAI</a> · from <a
+					>OpenAI</a> · From <a
 					class="text-blue-600 dark:text-blue-500"
 					href="https://github.com/Chanzhaoyu/chatgpt-web"
 					target="_blank"
@@ -65,7 +65,7 @@ onMounted(() => {
           >Shansing</a>
         </p>
 				<p>
-					本站由私人搭建托管，特性可能随时变动；含计费模块，旨在成本价提供，非营利。
+					本站由私人架设，可能随时变动特性；含计费模块，旨在抵消成本，非营利。
 				</p>
         <p>
 					最近更新：新增按用户计费、GPT 版本切换功能。
@@ -79,7 +79,7 @@ onMounted(() => {
       <p v-if="!isChatGPTAPI">
         {{ $t("setting.reverseProxy") }}：{{ config?.reverseProxy ?? '-' }}
       </p>
-      <p>{{ $t("setting.timeoutMs") }}：{{ config?.timeoutMs ?? '-' }}ms</p>
+      <p>{{ $t("setting.timeout") }}：{{ config?.timeoutMs ?? '-' }}ms</p>
 <!--      <p>{{ $t("setting.socks") }}：{{ config?.socksProxy ?? '-' }}</p>-->
 <!--      <p>{{ $t("setting.httpsProxy") }}：{{ config?.httpsProxy ?? '-' }}</p>-->
     </div>
