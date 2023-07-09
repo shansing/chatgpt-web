@@ -118,7 +118,14 @@ const quotaEnabled : boolean = quotaPath != null && modelChoices != null
 
 async function chatReplyProcess(options: RequestOptions) {
   const { message, lastContext, process, systemMessage, temperature, top_p, username, modelName } = options
-  try {
+	let modelChoice = null;
+	if (modelName && modelChoices) {
+		modelChoice = modelChoices.find(choice => choice.name === modelName);
+	}
+	if (modelChoices && modelChoice == null) {
+		return sendResponse({ type: 'Fail', message: '[Shansing Helper] Invalid model choice' })
+	}
+	try {
     let options: SendMessageOptions = { timeoutMs }
 
     if (apiModel === 'ChatGPTAPI') {
@@ -135,13 +142,6 @@ async function chatReplyProcess(options: RequestOptions) {
     }
 
 		let processApi = api;
-		let modelChoice = null;
-		if (modelName && modelChoices) {
-			modelChoice = modelChoices.find(choice => choice.name === modelName);
-		}
-		if (modelChoices && modelChoice == null) {
-			return sendResponse({ type: 'Fail', message: '[Shansing Helper] Invalid model choice' })
-		}
 		if (modelChoice) {
 			processApi = modelChoice.api
 			options.completionParams.model = modelChoice.model
@@ -162,6 +162,7 @@ async function chatReplyProcess(options: RequestOptions) {
   }
   catch (error: any) {
     const code = error.statusCode
+		payback(username, null, modelChoice)
     global.console.log(error)
     if (Reflect.has(ErrorCodeMessage, code))
       return sendResponse({ type: 'Fail', message: ErrorCodeMessage[code] })
@@ -297,7 +298,8 @@ function prePay(username, modelChoice : ModelChoice) {
 function payback(username, response : ChatMessage, modelChoice : ModelChoice) {
 	if (username && quotaEnabled && modelChoice) {
 		let plus;
-		if (response && response.detail && response.detail.usage) {
+		// globalThis.console.log('response.detail', response.detail)
+		if (response && response.detail && response.detail.usage && response.detail.usage.completion_tokens != null) {
 			let usage = response.detail.usage;
 			//退还费用
 			let thisBilling = (new Decimal(modelChoice.promptTokenPrice).mul(usage.prompt_tokens))
