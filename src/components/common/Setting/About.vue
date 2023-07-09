@@ -47,20 +47,31 @@ onMounted(() => {
       </h2>
       <div class="p-2 space-y-2 rounded-md bg-neutral-100 dark:bg-neutral-700">
         <p>
-					Shout out to OpenAI &
+					Shout out to
+					<a
+						class="text-blue-600 dark:text-blue-500"
+						href="https://openai.com"
+						target="_blank"
+					>OpenAI</a> · from <a
+					class="text-blue-600 dark:text-blue-500"
+					href="https://github.com/Chanzhaoyu/chatgpt-web"
+					target="_blank"
+				>Chanzhaoyu</a>
+					mod by
 					<a
             class="text-blue-600 dark:text-blue-500"
-            href="https://github.com/Chanzhaoyu/chatgpt-web"
+            href="https://github.com/shansing/chatgpt-web"
             target="_blank"
-          >
-            GitHub
-          </a>
-					! 本站由私人搭建托管，特性与账号可能随时变动。
+          >Shansing</a>
         </p>
+				<p>
+					本站由私人搭建托管，特性可能随时变动；含计费模块，旨在成本价提供，非营利。
+				</p>
         <p>
 					最近更新：新增按用户计费、GPT 版本切换功能。
         </p>
       </div>
+			<p>{{ $t("shansing.userQuota") }}：{{ config?.userQuota ?? '-' }}</p>
       <p>{{ $t("setting.api") }}：{{ config?.apiModel ?? '-' }}</p>
       <p v-if="isChatGPTAPI">
         {{ $t("setting.monthlyUsage") }}：{{ config?.usage ?? '-' }}
@@ -69,9 +80,8 @@ onMounted(() => {
         {{ $t("setting.reverseProxy") }}：{{ config?.reverseProxy ?? '-' }}
       </p>
       <p>{{ $t("setting.timeout") }}：{{ config?.timeoutMs ?? '-' }}</p>
-      <p>{{ $t("setting.socks") }}：{{ config?.socksProxy ?? '-' }}</p>
-      <p>{{ $t("setting.httpsProxy") }}：{{ config?.httpsProxy ?? '-' }}</p>
-			<p>用户余额：{{ config?.userQuota ?? '-' }}</p>
+<!--      <p>{{ $t("setting.socks") }}：{{ config?.socksProxy ?? '-' }}</p>-->
+<!--      <p>{{ $t("setting.httpsProxy") }}：{{ config?.httpsProxy ?? '-' }}</p>-->
     </div>
   </NSpin>
 </template>

@@ -92,4 +92,9 @@ export default {
     onlineImportWarning: '注意：請檢查 JSON 檔案來源！',
     downloadError: '請檢查網路狀態與 JSON 檔案有效性',
   },
+	shansing: {
+		userQuota: '用戶配額',
+		modelNameOption: '选取模型',
+		monthlyUsage: 'API 月使用',
+	},
 }

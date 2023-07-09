@@ -92,4 +92,9 @@ export default {
     onlineImportWarning: 'Note: Please check the JSON file source!',
     downloadError: 'Please check the network status and JSON file validity',
   },
+	shansing: {
+		userQuota: 'User\'s quota',
+		modelNameOption: 'Select model',
+		monthlyUsage: 'API Monthly Usage',
+	},
 }

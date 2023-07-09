@@ -37,6 +37,18 @@ function handleReset() {
 <template>
   <div class="p-4 space-y-5 min-h-[200px]">
     <div class="space-y-6">
+			<div class="flex items-center space-x-4">
+				<span class="flex-shrink-0 w-[120px]">{{ $t('shansing.modelNameOption') }}</span>
+				<div class="flex-1">
+					<NSelect
+						:options="modelNameOptions"
+						v-model:value="modelName"
+					/>
+				</div>
+				<NButton size="tiny" text type="primary" @click="updateSettings({ modelName })">
+					{{ $t('common.save') }}
+				</NButton>
+			</div>
       <div class="flex items-center space-x-4">
         <span class="flex-shrink-0 w-[120px]">{{ $t('setting.role') }}</span>
         <div class="flex-1">
@@ -66,18 +78,6 @@ function handleReset() {
           {{ $t('common.save') }}
         </NButton>
       </div>
-			<div class="flex items-center space-x-4">
-				<span class="flex-shrink-0 w-[120px]">选择模型</span>
-				<div class="flex-1">
-					<NSelect
-						:options="modelNameOptions"
-						v-model:value="modelName"
-					/>
-				</div>
-				<NButton size="tiny" text type="primary" @click="updateSettings({ modelName })">
-					{{ $t('common.save') }}
-				</NButton>
-			</div>
       <div class="flex items-center space-x-4">
         <span class="flex-shrink-0 w-[120px]">&nbsp;</span>
         <NButton size="small" @click="handleReset">
