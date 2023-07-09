@@ -96,5 +96,6 @@ export default {
 		userQuota: 'User\'s quota',
 		modelNameOption: 'Select model',
 		monthlyUsage: 'API Monthly Usage',
+		timeoutMs: 'Timeout(ms)',
 	},
 }

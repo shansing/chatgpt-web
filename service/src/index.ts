@@ -59,7 +59,7 @@ router.post('/config', auth, async (req, res) => {
     const response = await chatConfig()
 		const username = getUsernameFromHttpBasicAuth(req);
 		if (username)
-			response.data.userQuota = username + " / " + readUserQuota(username).toFixed()
+			response.data.userQuota = "(" + username + ") " + readUserQuota(username).toFixed()
     res.send(response)
   }
   catch (error) {
