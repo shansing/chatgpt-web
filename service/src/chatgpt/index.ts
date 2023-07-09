@@ -319,7 +319,10 @@ async function getModelChoices() {
 		data: isNotEmptyString(process.env.SHANSING_MODEL_CHOICES) ? JSON.parse(process.env.SHANSING_MODEL_CHOICES) : null,
 	})
 }
+function isQuotaEnabled() {
+	return isQuotaEnabled()
+}
 
 export type { ChatContext, ChatMessage }
 
-export { chatReplyProcess, chatConfig, currentModel, readUserQuota, getModelChoices }
+export { chatReplyProcess, chatConfig, currentModel, readUserQuota, getModelChoices, isQuotaEnabled }
