@@ -41,6 +41,7 @@ export interface ModelConfig {
   httpsProxy?: string
   usage?: string
 	userQuota?: string
+	modelChoices?: string
 }
 
 export type ApiModel = 'ChatGPTAPI' | 'ChatGPTUnofficialProxyAPI' | undefined

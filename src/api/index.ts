@@ -20,6 +20,12 @@ export function fetchChatConfig<T = any>() {
   })
 }
 
+export function fetchModelChoices<T = any>() {
+	return post<T>({
+		url: '/modelChoices',
+	})
+}
+
 export function fetchChatAPIProcess<T = any>(
   params: {
     prompt: string

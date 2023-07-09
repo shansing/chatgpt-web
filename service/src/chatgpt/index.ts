@@ -311,7 +311,13 @@ function payback(username, response : ChatMessage, modelChoice : ModelChoice) {
 		increaseUserQuota(username, plus)
 	}
 }
+async function getModelChoices() {
+	return sendResponse<ModelChoice[]>({
+		type: 'Success',
+		data: isNotEmptyString(process.env.SHANSING_MODEL_CHOICES) ? JSON.parse(process.env.SHANSING_MODEL_CHOICES) : null,
+	})
+}
 
 export type { ChatContext, ChatMessage }
 
-export { chatReplyProcess, chatConfig, currentModel, readUserQuota }
+export { chatReplyProcess, chatConfig, currentModel, readUserQuota, getModelChoices }

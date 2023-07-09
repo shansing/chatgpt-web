@@ -93,8 +93,8 @@ export default {
     downloadError: 'Please check the network status and JSON file validity',
   },
 	shansing: {
-		userQuota: 'User\'s quota',
-		modelNameOption: 'Select model',
+		userQuota: 'User\'s Quota',
+		modelNameOption: 'Select Model',
 		monthlyUsage: 'API Monthly Usage',
 	},
 }

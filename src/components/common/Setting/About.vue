@@ -13,6 +13,7 @@ interface ConfigState {
   httpsProxy?: string
   usage?: string
 	userQuota?: string
+	modelChoices?: string
 }
 
 const authStore = useAuthStore()
@@ -82,6 +83,7 @@ onMounted(() => {
       <p>{{ $t("setting.timeout") }}：{{ config?.timeoutMs ?? '-' }}ms</p>
 <!--      <p>{{ $t("setting.socks") }}：{{ config?.socksProxy ?? '-' }}</p>-->
 <!--      <p>{{ $t("setting.httpsProxy") }}：{{ config?.httpsProxy ?? '-' }}</p>-->
+<!--			<p>{{ $t("shansing.modelChoices") }}：{{ config?.modelChoices ?? '-' }}</p>-->
     </div>
   </NSpin>
 </template>

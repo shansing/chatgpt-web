@@ -1,7 +1,7 @@
 import express from 'express'
 import type { RequestProps } from './types'
 import type { ChatMessage } from './chatgpt'
-import { chatReplyProcess, chatConfig, currentModel, readUserQuota } from './chatgpt'
+import { chatReplyProcess, chatConfig, currentModel, readUserQuota, getModelChoices } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
@@ -60,11 +60,22 @@ router.post('/config', auth, async (req, res) => {
 		const username = getUsernameFromHttpBasicAuth(req);
 		if (username)
 			response.data.userQuota = readUserQuota(username).toFixed() + " @ " + username
+		response.data.modelChoices = process.env.SHANSING_MODEL_CHOICES
     res.send(response)
   }
   catch (error) {
     res.send(error)
   }
+})
+
+router.post('/modelChoices', auth, async (req, res) => {
+	try {
+		const response = await getModelChoices()
+		res.send(response)
+	}
+	catch (error) {
+		res.send(error)
+	}
 })
 
 router.post('/session', async (req, res) => {
