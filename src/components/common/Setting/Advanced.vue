@@ -67,7 +67,7 @@ onMounted(() => {
 			<div class="space-y-6">
 				<div class="flex items-center space-x-4">
 					<span class="flex-shrink-0 w-[120px]">{{ $t('shansing.modelNameOption') }}</span>
-					<div class="flex-1">
+					<div class="flex-1 overflow-hidden">
 						<NSelect
 							:options="modelNameOptions"
 							v-model:value="modelName"

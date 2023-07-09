@@ -14,6 +14,7 @@ interface ConfigState {
   usage?: string
 	userQuota?: string
 	modelChoices?: string
+	aboutHtml: string
 }
 
 const authStore = useAuthStore()
@@ -65,12 +66,7 @@ onMounted(() => {
             target="_blank"
           >Shansing</a>
         </p>
-				<p>
-					本站由私人架设，可能随时变动特性；含计费模块，旨在抵消成本，非营利。
-				</p>
-        <p>
-					最近更新：新增按用户计费、GPT 版本切换功能。
-        </p>
+				<div class="space-y-2" v-html="config?.aboutHtml"></div>
       </div>
 			<p>{{ $t("shansing.userQuota") }}：{{ config?.userQuota ?? '-' }}</p>
       <p>{{ $t("setting.api") }}：{{ config?.apiModel ?? '-' }}</p>

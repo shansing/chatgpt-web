@@ -227,9 +227,10 @@ async function chatConfig() {
   const socksProxy = (process.env.SOCKS_PROXY_HOST && process.env.SOCKS_PROXY_PORT)
     ? (`${process.env.SOCKS_PROXY_HOST}:${process.env.SOCKS_PROXY_PORT}`)
     : '-'
+	const aboutHtml = process.env.SHANSING_ABOUT_HTML ?? ''
   return sendResponse<ModelConfig>({
     type: 'Success',
-    data: { apiModel, reverseProxy, timeoutMs, socksProxy, httpsProxy, usage },
+    data: { apiModel, reverseProxy, timeoutMs, socksProxy, httpsProxy, usage, aboutHtml },
   })
 }
 
