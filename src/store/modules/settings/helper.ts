@@ -12,7 +12,7 @@ export interface SettingsState {
 export function defaultSetting(): SettingsState {
 	const currentDate = new Date().toISOString().split('T')[0]
 	return {
-		systemMessage: `You are ChatGPT, a large language model trained by OpenAI. Knowledge cutoff: 2021-09-01 Current date: ${currentDate}`,
+		systemMessage: `You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. Knowledge cutoff: 2021-09. Current date: ${currentDate}.`,
 		temperature: 1,
 		top_p: 1,
 		modelName: 'GPT-4',
