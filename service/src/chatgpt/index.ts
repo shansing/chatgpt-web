@@ -321,7 +321,7 @@ async function getModelChoices() {
 	})
 }
 function isQuotaEnabled() {
-	return isQuotaEnabled()
+	return quotaEnabled
 }
 
 export type { ChatContext, ChatMessage }
