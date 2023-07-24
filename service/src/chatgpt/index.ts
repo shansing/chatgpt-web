@@ -61,7 +61,8 @@ const quotaEnabled : boolean = quotaPath != null && modelChoices != null
     setupProxy(options)
 
 		if (modelChoices != null) {
-			const metaMaxModelTokens = 1024
+			//should be 1024, but it's good to leave some space because token estimation isn't accurate
+			const metaMaxModelTokens = 1000
 			for (let modelChoice of modelChoices) {
 				let promptTokenPrice = new Decimal(modelChoice.promptTokenPrice)
 				let completionTokenPrice = new Decimal(modelChoice.completionTokenPrice)
