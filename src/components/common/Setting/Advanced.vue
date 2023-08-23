@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, Ref, ref } from 'vue'
-import {NButton, NInput, NSelect, NSlider, NSpin, useMessage} from 'naive-ui'
+import { NButton, NInput, NSelect, NSlider, useMessage } from 'naive-ui'
 import { useSettingStore } from '@/store'
 import type { SettingsState } from '@/store/modules/settings/helper'
 import { t } from '@/locales'
