@@ -124,7 +124,7 @@ async function chatReplyProcess(options: RequestOptions) {
 		modelChoice = modelChoices.find(choice => choice.name === modelName);
 	}
 	if (modelChoices && modelChoice == null) {
-		return sendResponse({ type: 'Fail', message: '[Shansing Helper] Invalid model choice' })
+		return sendResponse({ type: 'Fail', message: '[Shansing Helper] Invalid model choice | 模型选择无效' })
 	}
 	try {
     let options: SendMessageOptions = { timeoutMs }
@@ -148,7 +148,7 @@ async function chatReplyProcess(options: RequestOptions) {
 			options.completionParams.model = modelChoice.model
 			if (!prePay(username, modelChoice)) {
 				globalThis.console.error(username + "'s quota is not enough, need " + modelChoice.maxPrice);
-				return sendResponse({ type: 'Fail', message: '[Shansing Helper] Insufficient pre-deduction quota, need ' + modelChoice.maxPrice })
+				return sendResponse({ type: 'Fail', message: '[Shansing Helper] Insufficient pre-deduction quota, need 🪙' + modelChoice.maxPrice + ' | 预扣费余额不足，需要🪙' + modelChoice.maxPrice})
 			}
 		}
     const response = await processApi.sendMessage(message, {

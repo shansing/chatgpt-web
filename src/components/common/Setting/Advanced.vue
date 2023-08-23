@@ -47,9 +47,9 @@ async function getModelChoices() {
 		modelNameOptions.value = data.map(choice => {
 			let label = choice.name /*  + " / " + choice.model */
 			if (choice.promptTokenPrice)
-				label += " / P:" + choice.promptTokenPrice
+				label += " / P:🪙" + choice.promptTokenPrice
 			if (choice.completionTokenPrice)
-				label += " / C:" + choice.completionTokenPrice
+				label += " / C:🪙" + choice.completionTokenPrice
 			return {label, key: choice.name, value: choice.name}
 		})}
 	finally {

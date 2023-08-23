@@ -68,7 +68,7 @@ onMounted(() => {
         </p>
 				<div class="space-y-2" v-html="config?.aboutHtml"></div>
       </div>
-			<p>{{ $t("shansing.userQuota") }}：{{ config?.userQuota ?? '-' }}</p>
+			<p>{{ $t("shansing.userQuota") }}：🪙{{ config?.userQuota ?? '-' }}</p>
       <p>{{ $t("setting.api") }}：{{ config?.apiModel ?? '-' }}</p>
       <p v-if="isChatGPTAPI">
         {{ $t("shansing.monthlyUsage") }}：{{ config?.usage ?? '-' }}
