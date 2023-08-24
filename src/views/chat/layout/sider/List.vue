@@ -75,7 +75,7 @@ function isActive(uuid: number) {
                 v-model:value="item.title" size="tiny"
                 @keypress="handleEnter(item, false, $event)"
               />
-              <span v-else><span class="text-xs font-thin">{{ item.modelName }}</span> {{ item.title }}</span>
+              <span v-else><span class="text-xs font-light">{{ item.modelName }}</span> {{ item.title }}</span>
             </div>
             <div v-if="isActive(item.uuid)" class="absolute z-10 flex visible right-1">
               <template v-if="item.isEdit">
