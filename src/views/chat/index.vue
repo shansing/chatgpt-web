@@ -12,7 +12,7 @@ import { useUsingContext } from './hooks/useUsingContext'
 import HeaderComponent from './components/Header/index.vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { useChatStore, usePromptStore } from '@/store'
+import { useChatStore, usePromptStore, useSettingStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
 import { t } from '@/locales'
 
@@ -27,7 +27,7 @@ const ms = useMessage()
 const chatStore = useChatStore()
 
 const { isMobile } = useBasicLayout()
-const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
+const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex, getHistoryModelNameByUuid } = useChat()
 const { scrollRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll()
 const { usingContext, toggleUsingContext } = useUsingContext()
 
@@ -42,6 +42,7 @@ const inputRef = ref<Ref | null>(null)
 
 // 添加PromptStore
 const promptStore = usePromptStore()
+const settingStore = useSettingStore()
 
 // 使用storeToRefs，保证store修改后，联想部分能够重新渲染
 const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
@@ -58,6 +59,7 @@ function handleSubmit() {
 
 async function onConversation() {
   let message = prompt.value
+	const defaultModelName = settingStore.modelName
 
   if (loading.value)
     return
@@ -77,6 +79,7 @@ async function onConversation() {
       conversationOptions: null,
       requestOptions: { prompt: message, options: null },
     },
+		defaultModelName,
   )
   scrollToBottom()
 
@@ -100,6 +103,7 @@ async function onConversation() {
       conversationOptions: null,
       requestOptions: { prompt: message, options: { ...options } },
     },
+		defaultModelName,
   )
   scrollToBottom()
 
@@ -109,6 +113,7 @@ async function onConversation() {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: message,
         options,
+				modelName: getHistoryModelNameByUuid(+uuid, defaultModelName),
         signal: controller.signal,
         onDownloadProgress: ({ event }) => {
           const xhr = event.target
@@ -211,6 +216,8 @@ async function onRegenerate(index: number) {
 
   const { requestOptions } = dataSources.value[index]
 
+	const defaultModelName = settingStore.modelName
+
   let message = requestOptions?.prompt ?? ''
 
   let options: Chat.ConversationRequest = {}
@@ -240,6 +247,7 @@ async function onRegenerate(index: number) {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: message,
         options,
+				modelName: getHistoryModelNameByUuid(+uuid, defaultModelName),
         signal: controller.signal,
         onDownloadProgress: ({ event }) => {
           const xhr = event.target

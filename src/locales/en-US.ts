@@ -94,7 +94,7 @@ export default {
   },
 	shansing: {
 		userQuota: 'User\'s Quota',
-		modelNameOption: 'Select Model',
+		modelNameOption: 'Model for New Chat',
 		monthlyUsage: 'API Monthly Usage',
 	},
 }

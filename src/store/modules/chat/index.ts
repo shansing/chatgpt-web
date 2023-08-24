@@ -80,6 +80,19 @@ export const useChatStore = defineStore('chat-store', {
       return await this.reloadRoute(uuid)
     },
 
+		getHistoryModelNameByUuid(uuid: number, defaultModelName : string) {
+			let modelName = defaultModelName
+			if (uuid) {
+				const index = this.history.findIndex(item => item.uuid === uuid)
+				if (index !== -1) {
+					if (this.history[index].modelName) {
+						modelName = this.history[index].modelName
+					}
+				}
+			}
+			return modelName
+		},
+
     getChatByUuidAndIndex(uuid: number, index: number) {
       if (!uuid || uuid === 0) {
         if (this.chat.length)
@@ -92,11 +105,11 @@ export const useChatStore = defineStore('chat-store', {
       return null
     },
 
-    addChatByUuid(uuid: number, chat: Chat.Chat) {
+    addChatByUuid(uuid: number, chat: Chat.Chat, defaultModelName : string) {
       if (!uuid || uuid === 0) {
         if (this.history.length === 0) {
           const uuid = Date.now()
-          this.history.push({ uuid, title: chat.text, isEdit: false })
+          this.history.push({ uuid, title: chat.text, isEdit: false, modelName: defaultModelName })
           this.chat.push({ uuid, data: [chat] })
           this.active = uuid
           this.recordState()
@@ -105,6 +118,9 @@ export const useChatStore = defineStore('chat-store', {
           this.chat[0].data.push(chat)
           if (this.history[0].title === 'New Chat')
             this.history[0].title = chat.text
+					if (this.history[0].modelName == null) {
+						this.history[0].modelName = defaultModelName
+					}
           this.recordState()
         }
       }
@@ -114,6 +130,9 @@ export const useChatStore = defineStore('chat-store', {
         this.chat[index].data.push(chat)
         if (this.history[index].title === 'New Chat')
           this.history[index].title = chat.text
+				if (this.history[index].modelName == null) {
+					this.history[index].modelName = defaultModelName
+				}
         this.recordState()
       }
     },

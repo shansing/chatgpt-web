@@ -7,8 +7,12 @@ export function useChat() {
     return chatStore.getChatByUuidAndIndex(uuid, index)
   }
 
-  const addChat = (uuid: number, chat: Chat.Chat) => {
-    chatStore.addChatByUuid(uuid, chat)
+	const getHistoryModelNameByUuid = (uuid: number, defaultModelName : string) => {
+			return chatStore.getHistoryModelNameByUuid(uuid, defaultModelName)
+	}
+
+  const addChat = (uuid: number, chat: Chat.Chat, defaultModelName : string) => {
+    chatStore.addChatByUuid(uuid, chat, defaultModelName)
   }
 
   const updateChat = (uuid: number, index: number, chat: Chat.Chat) => {
@@ -24,5 +28,6 @@ export function useChat() {
     updateChat,
     updateChatSome,
     getChatByUuidAndIndex,
+    getHistoryModelNameByUuid,
   }
 }
