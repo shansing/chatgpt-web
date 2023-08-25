@@ -59,7 +59,8 @@ router.post('/config', auth, async (req, res) => {
     const response = await chatConfig()
 		const username = getUsernameFromHttpBasicAuth(req);
 		if (isQuotaEnabled() && username)
-			response.data.userQuota = '🪙' + readUserQuota(username).toFixed() + " (" + username + ")"
+			response.data.userQuota = readUserQuota(username).toFixed()
+		  response.data.userName = username
 			response.data.modelChoices = process.env.SHANSING_MODEL_CHOICES
     res.send(response)
   }

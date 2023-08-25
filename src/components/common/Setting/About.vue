@@ -13,6 +13,7 @@ interface ConfigState {
   httpsProxy?: string
   usage?: string
 	userQuota?: string
+	userName?: string
 	modelChoices?: string
 	aboutHtml: string
 }
@@ -68,7 +69,12 @@ onMounted(() => {
         </p>
 				<div class="space-y-2" v-html="config?.aboutHtml"></div>
       </div>
-			<p>{{ $t("shansing.userQuota") }}：{{ config?.userQuota ?? '-' }}</p>
+			<p>{{ $t("shansing.userQuota") }}：
+				<span v-if="config?.userQuota != null && config?.userName != null">
+      		🪙{{ config?.userQuota }} ({{ config?.userName }})
+    		</span>
+				<span v-else>-</span>
+				</p>
       <p>{{ $t("setting.api") }}：{{ config?.apiModel ?? '-' }}</p>
       <p v-if="isChatGPTAPI">
         {{ $t("shansing.monthlyUsage") }}：{{ config?.usage ?? '-' }}

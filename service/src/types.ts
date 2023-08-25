@@ -41,6 +41,7 @@ export interface ModelConfig {
   httpsProxy?: string
   usage?: string
 	userQuota?: string
+	userName?: string
 	modelChoices?: string
 	aboutHtml: string
 }
