@@ -76,12 +76,12 @@ onMounted(() => {
 				<span v-else>-</span>
 				</p>
       <p>{{ $t("setting.api") }}：{{ config?.apiModel ?? '-' }}</p>
-      <p v-if="isChatGPTAPI">
-        {{ $t("shansing.monthlyUsage") }}：{{ config?.usage ?? '-' }}
-      </p>
-      <p v-if="!isChatGPTAPI">
-        {{ $t("setting.reverseProxy") }}：{{ config?.reverseProxy ?? '-' }}
-      </p>
+<!--      <p v-if="isChatGPTAPI">-->
+<!--        {{ $t("shansing.monthlyUsage") }}：{{ config?.usage ?? '-' }}-->
+<!--      </p>-->
+<!--      <p v-if="!isChatGPTAPI">-->
+<!--        {{ $t("setting.reverseProxy") }}：{{ config?.reverseProxy ?? '-' }}-->
+<!--      </p>-->
       <p>{{ $t("setting.timeout") }}：{{ config?.timeoutMs ?? '-' }}ms</p>
 <!--      <p>{{ $t("setting.socks") }}：{{ config?.socksProxy ?? '-' }}</p>-->
 <!--      <p>{{ $t("setting.httpsProxy") }}：{{ config?.httpsProxy ?? '-' }}</p>-->
