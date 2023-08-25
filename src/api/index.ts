@@ -43,8 +43,8 @@ export function fetchChatAPIProcess<T = any>(
   }
 
 	let systemMessage = settingStore.systemMessage
-		.replaceAll('{{ShansingHelperCurrentDate}}', new Date().toISOString().split('T')[0])
-		.replaceAll('{{ShansingHelperCurrentTime}}', new Date().toISOString())
+		.replaceAll('{{ShansingHelperCurrentDate}}', new Date().toLocaleDateString('ISO', {year: 'numeric', month: '2-digit', day: '2-digit'}).replace(/\//g, '-') )
+		.replaceAll('{{ShansingHelperCurrentTime}}', new Date().toLocaleTimeString('UTC') )
 		.replaceAll('{{ShansingHelperModelName}}', params.modelName)
 		.replaceAll('{{ShansingHelperUserLanguage}}', navigator.language)
 
