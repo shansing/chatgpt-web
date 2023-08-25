@@ -8,7 +8,22 @@
 	<meta name="viewport"
 		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover" />
 	<title>Shansing Helper</title>
-	<script> if (caches) {caches.keys().then(cacheNames => { cacheNames.forEach(cacheName => { caches.delete(cacheName); });}); }  if (localStorage && localStorage.length === 0) { /*localStorage.setItem("chatStorage", \'{"data":{"active":null,"usingContext":false,"history":[],"chat":[]},"expire":null}\');*/ } </script>
+	<script>
+		if (caches) {caches.keys().then(cacheNames => { cacheNames.forEach(cacheName => { caches.delete(cacheName); }); if (cacheNames.length > 0) location.reload(true);  }); }
+		if (localStorage && localStorage.length === 0) { /*localStorage.setItem("chatStorage", \'{"data":{"active":null,"usingContext":false,"history":[],"chat":[]},"expire":null}\');*/ }
+		if (localStorage && localStorage.getItem('settingsStorage')) {
+			const settingsStorage = JSON.parse(localStorage.getItem('settingsStorage'))
+			const goodSystemMessage = `You are ChatGPT, a large language model trained by OpenAI, based on the {{ShansingHelperModelName}} architecture. Knowledge cutoff: 2021-09. Current date: {{ShansingHelperCurrentDate}}.`
+			let calculatedSystemMessage = `You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. Knowledge cutoff: 2021-09. Current date: {{ShansingHelperCurrentDate}}.`.replaceAll('{{ShansingHelperCurrentDate}}', new Date().toISOString().split('T')[0])
+			let savedSystemMessage = settingsStorage?.data?.systemMessage
+			if ((savedSystemMessage && savedSystemMessage.trim().length === calculatedSystemMessage.length && savedSystemMessage.startsWith('You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. Knowledge cutoff: 2021-09. Current date:'))
+				|| (savedSystemMessage && savedSystemMessage.trim().length === `You are ChatGPT, a large language model trained by OpenAI. Knowledge cutoff: 2021-09-01 Current date: 0000-00-00`.length && savedSystemMessage.startsWith('You are ChatGPT, a large language model trained by OpenAI. Knowledge cutoff: 2021-09-01 Current date:'))
+			) {
+				settingsStorage.data.systemMessage = goodSystemMessage
+				localStorage.setItem('settingsStorage', JSON.stringify(settingsStorage))
+			}
+		}
+	</script>
 	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 	<meta http-equiv="Pragma" content="no-cache">
 	<meta http-equiv="Expires" content="0">

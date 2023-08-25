@@ -42,10 +42,16 @@ export function fetchChatAPIProcess<T = any>(
     options: params.options,
   }
 
+	let systemMessage = settingStore.systemMessage
+		.replaceAll('{{ShansingHelperCurrentDate}}', new Date().toISOString().split('T')[0])
+		.replaceAll('{{ShansingHelperCurrentTime}}', new Date().toISOString())
+		.replaceAll('{{ShansingHelperModelName}}', params.modelName)
+		.replaceAll('{{ShansingHelperUserLanguage}}', navigator.language)
+
   if (authStore.isChatGPTAPI) {
     data = {
       ...data,
-      systemMessage: settingStore.systemMessage,
+      systemMessage: systemMessage,
       temperature: settingStore.temperature,
       top_p: settingStore.top_p,
       modelName: params.modelName,
