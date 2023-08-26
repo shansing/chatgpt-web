@@ -94,6 +94,7 @@ export default {
   },
 	shansing: {
 		userQuota: '用户余额',
+		userName: '当前用户',
 		modelNameOption: '新建聊天的模型',
 		monthlyUsage: 'API 月用量',
 	},

@@ -69,10 +69,8 @@ onMounted(() => {
         </p>
 				<div class="space-y-2" v-html="config?.aboutHtml"></div>
       </div>
-			<p>{{ $t("shansing.userQuota") }}：<span v-if="config?.userQuota != null">🪙{{ config?.userQuota }}&nbsp;</span>
-        <span v-if="config?.userName != null" class="text-sm text-gray-300">{{ config?.userName }}</span>
-        <span v-if="config?.userQuota == null || config?.userName == null">-</span>
-			</p>
+			<p>{{ $t("shansing.userName") }}：{{ config?.userName ?? '-' }}</p>
+			<p>{{ $t("shansing.userQuota") }}：<span v-if="config?.userQuota != null">🪙{{ config?.userQuota }}</span><span v-else>-</span></p>
       <p>{{ $t("setting.api") }}：{{ config?.apiModel ?? '-' }}</p>
 <!--      <p v-if="isChatGPTAPI">-->
 <!--        {{ $t("shansing.monthlyUsage") }}：{{ config?.usage ?? '-' }}-->
