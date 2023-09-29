@@ -96,7 +96,7 @@ async function onConversation() {
     +uuid,
     {
       dateTime: new Date().toLocaleString(),
-      text: '',
+      text: '_',
       loading: true,
       inversion: false,
       error: false,
