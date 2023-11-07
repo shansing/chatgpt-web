@@ -13,6 +13,7 @@ export interface RequestProps {
 export interface ModelChoice {
 	name: string
 	model: string
+	contextToken1k: number
 	promptTokenPrice1k?: string
 	completionTokenPrice1k?: string
 	api: ChatGPTAPI | ChatGPTUnofficialProxyAPI

@@ -39,7 +39,6 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 const kilo : Decimal = new Decimal("1000")
 ;
 
-const MAX_TOKEN_TIMES = process.env.SHANSING_MAX_TOKEN_TIMES;
 const quotaPath : string = process.env.SHANSING_QUOTA_PATH
 const modelChoices : ModelChoice[] = isNotEmptyString(process.env.SHANSING_MODEL_CHOICES) ? JSON.parse(process.env.SHANSING_MODEL_CHOICES) : null
 const quotaEnabled : boolean = quotaPath != null && modelChoices != null
@@ -64,34 +63,14 @@ const quotaEnabled : boolean = quotaPath != null && modelChoices != null
 
 		if (modelChoices != null) {
 			//should be 1024, but it's good to leave some space because token estimation isn't accurate
-			const metaMaxModelTokens = 1000
+			const kiloMaxModelTokens = 1000
 			for (let modelChoice of modelChoices) {
 				let promptTokenPrice = new Decimal(modelChoice.promptTokenPrice1k).div(kilo)
 				let completionTokenPrice = new Decimal(modelChoice.completionTokenPrice1k).div(kilo)
 				let choiceOptions: ChatGPTAPIOptions = JSON.parse(JSON.stringify(options))
-				let maxModelTokens
-				let maxResponseTokens
-				let lowercaseModel = modelChoice.model.toLowerCase()
-				if (isNotEmptyString(MAX_TOKEN_TIMES)) {
-					const maxTokenTimes = parseInt(MAX_TOKEN_TIMES);
-					maxModelTokens = metaMaxModelTokens * maxTokenTimes
-					maxResponseTokens = maxModelTokens / 4
-				} else if (lowercaseModel.includes('16k')) {
-					maxModelTokens = metaMaxModelTokens * 16
-					maxResponseTokens = maxModelTokens / 4
-				} else if (lowercaseModel.includes('32k')) {
-					maxModelTokens = metaMaxModelTokens *32
-					maxResponseTokens = maxModelTokens / 4
-				} else if (lowercaseModel.includes('64k')) {
-					maxModelTokens = metaMaxModelTokens * 64
-					maxResponseTokens = maxModelTokens / 4
-				} else if (lowercaseModel.includes('gpt-4')) {
-					maxModelTokens = metaMaxModelTokens * 8
-					maxResponseTokens = maxModelTokens / 4
-				} else {
-					maxModelTokens = metaMaxModelTokens * 4
-					maxResponseTokens = maxModelTokens / 4
-				}
+				let maxModelTokens = kiloMaxModelTokens * modelChoice.contextToken1k
+				let maxResponseTokens = maxModelTokens / 4
+				;
 				choiceOptions.maxModelTokens = maxModelTokens
 				choiceOptions.maxResponseTokens = maxResponseTokens
 				let maxPrice = quotaEnabled ? (promptTokenPrice.mul(maxModelTokens - maxResponseTokens)).plus(completionTokenPrice.mul(maxResponseTokens)) : null
