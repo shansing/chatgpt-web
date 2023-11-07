@@ -100,7 +100,7 @@ const quotaEnabled : boolean = quotaPath != null && modelChoices != null
 
 async function chatReplyProcess(options: RequestOptions) {
   const { message, lastContext, process, systemMessage, temperature, top_p, username, modelName } = options
-	let modelChoice = null;
+	let modelChoice : ModelChoice = null;
 	if (modelName && modelChoices) {
 		modelChoice = modelChoices.find(choice => choice.name === modelName);
 	}
@@ -113,6 +113,12 @@ async function chatReplyProcess(options: RequestOptions) {
     if (apiModel === 'ChatGPTAPI') {
       if (isNotEmptyString(systemMessage))
         options.systemMessage = systemMessage
+			if (modelChoice != null)
+				options.systemMessage = options.systemMessage
+					.replace(/{{ShansingHelperCurrentDate}}/g, new Date().toLocaleDateString('ISO', {year: 'numeric', month: '2-digit', day: '2-digit'}).replace(/\//g, '-') )
+					.replace(/{{ShansingHelperCurrentTime}}/g, new Date().toLocaleTimeString('UTC') )
+					.replace(/{{ShansingHelperModelName}}/g, modelChoice.name)
+					.replace(/{{ShansingHelperKnowledgeDate}}/g, modelChoice.knowledgeDate)
       options.completionParams = { model, temperature, top_p }
     }
 

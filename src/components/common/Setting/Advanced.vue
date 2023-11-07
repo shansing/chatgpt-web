@@ -39,7 +39,7 @@ interface ModelChoice {
 	contextToken1k: number
 	promptTokenPrice1k?: string
 	completionTokenPrice1k?: string
-	maxPrice: string
+	knowledgeDate: string
 }
 async function getModelChoices() {
 	try {

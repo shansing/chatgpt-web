@@ -11,7 +11,7 @@ export interface SettingsState {
 
 export function defaultSetting(): SettingsState {
 	return {
-		systemMessage: `You are ChatGPT, a large language model trained by OpenAI, based on the {{ShansingHelperModelName}} architecture. Knowledge cutoff: 2021-09. Current date: {{ShansingHelperCurrentDate}}.`,
+		systemMessage: `You are ChatGPT, a large language model trained by OpenAI, based on the {{ShansingHelperModelName}} architecture. Knowledge cutoff: {{ShansingHelperKnowledgeDate}}. Current date: {{ShansingHelperUserDate}}.`,
 		temperature: 1,
 		top_p: 1,
 		modelName: 'GPT-4',

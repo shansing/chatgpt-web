@@ -16,6 +16,7 @@ export interface ModelChoice {
 	contextToken1k: number
 	promptTokenPrice1k?: string
 	completionTokenPrice1k?: string
+	knowledgeDate: string
 	api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 	maxPrice: string
 }
