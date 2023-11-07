@@ -14,6 +14,7 @@ export interface ModelChoice {
 	name: string
 	model: string
 	contextToken1k: number
+	completionToken1k: number
 	promptTokenPrice1k?: string
 	completionTokenPrice1k?: string
 	knowledgeDate: string

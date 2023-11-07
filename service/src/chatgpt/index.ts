@@ -36,7 +36,7 @@ if (!isNotEmptyString(process.env.OPENAI_API_KEY) && !isNotEmptyString(process.e
   throw new Error('Missing OPENAI_API_KEY or OPENAI_ACCESS_TOKEN environment variable')
 
 let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
-const kilo : Decimal = new Decimal("1000")
+const kilo = new Decimal('1000')
 ;
 
 const quotaPath : string = process.env.SHANSING_QUOTA_PATH
@@ -68,8 +68,8 @@ const quotaEnabled : boolean = quotaPath != null && modelChoices != null
 				let promptTokenPrice = new Decimal(modelChoice.promptTokenPrice1k).div(kilo)
 				let completionTokenPrice = new Decimal(modelChoice.completionTokenPrice1k).div(kilo)
 				let choiceOptions: ChatGPTAPIOptions = JSON.parse(JSON.stringify(options))
-				let maxModelTokens = kiloMaxModelTokens * modelChoice.contextToken1k
-				let maxResponseTokens = maxModelTokens / 4
+				let maxModelTokens = modelChoice.contextToken1k * kiloMaxModelTokens
+				let maxResponseTokens = modelChoice.completionToken1k * kiloMaxModelTokens
 				;
 				choiceOptions.maxModelTokens = maxModelTokens
 				choiceOptions.maxResponseTokens = maxResponseTokens
