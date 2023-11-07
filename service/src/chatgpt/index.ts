@@ -36,6 +36,8 @@ if (!isNotEmptyString(process.env.OPENAI_API_KEY) && !isNotEmptyString(process.e
   throw new Error('Missing OPENAI_API_KEY or OPENAI_ACCESS_TOKEN environment variable')
 
 let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
+const kilo : Decimal = new Decimal("1000")
+;
 
 const MAX_TOKEN_TIMES = process.env.SHANSING_MAX_TOKEN_TIMES;
 const quotaPath : string = process.env.SHANSING_QUOTA_PATH
@@ -64,8 +66,8 @@ const quotaEnabled : boolean = quotaPath != null && modelChoices != null
 			//should be 1024, but it's good to leave some space because token estimation isn't accurate
 			const metaMaxModelTokens = 1000
 			for (let modelChoice of modelChoices) {
-				let promptTokenPrice = new Decimal(modelChoice.promptTokenPrice)
-				let completionTokenPrice = new Decimal(modelChoice.completionTokenPrice)
+				let promptTokenPrice = new Decimal(modelChoice.promptTokenPrice1k).div(kilo)
+				let completionTokenPrice = new Decimal(modelChoice.completionTokenPrice1k).div(kilo)
 				let choiceOptions: ChatGPTAPIOptions = JSON.parse(JSON.stringify(options))
 				let maxModelTokens
 				let maxResponseTokens
@@ -304,8 +306,8 @@ function payback(username, response : ChatMessage, modelChoice : ModelChoice) {
 		if (response && response.detail && response.detail.usage && response.detail.usage.completion_tokens != null) {
 			let usage = response.detail.usage;
 			//退还费用
-			let thisBilling = (new Decimal(modelChoice.promptTokenPrice).mul(usage.prompt_tokens))
-				.plus(new Decimal(modelChoice.completionTokenPrice).mul(usage.completion_tokens))
+			let thisBilling = (new Decimal(modelChoice.promptTokenPrice1k).div(kilo).mul(usage.prompt_tokens))
+				.plus(new Decimal(modelChoice.completionTokenPrice1k).div(kilo).mul(usage.completion_tokens))
 			plus = new Decimal(modelChoice.maxPrice).sub(thisBilling)
 		} else {
 			//退还所有费用

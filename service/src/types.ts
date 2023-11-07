@@ -13,8 +13,8 @@ export interface RequestProps {
 export interface ModelChoice {
 	name: string
 	model: string
-	promptTokenPrice?: string
-	completionTokenPrice?: string
+	promptTokenPrice1k?: string
+	completionTokenPrice1k?: string
 	api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 	maxPrice: string
 }

@@ -36,8 +36,8 @@ function handleReset() {
 interface ModelChoice {
 	name: string
 	model: string
-	promptTokenPrice?: string
-	completionTokenPrice?: string
+	promptTokenPrice1k?: string
+	completionTokenPrice1k?: string
 	maxPrice: string
 }
 async function getModelChoices() {
@@ -46,10 +46,10 @@ async function getModelChoices() {
 		const { data } = await fetchModelChoices<ModelChoice[]>()
 		modelNameOptions.value = data.map(choice => {
 			let label = choice.name /*  + " / " + choice.model */
-			if (choice.promptTokenPrice)
-				label += " / P:🪙" + choice.promptTokenPrice
-			if (choice.completionTokenPrice)
-				label += " / C:🪙" + choice.completionTokenPrice
+			if (choice.promptTokenPrice1k)
+				label += " / P:🪙" + choice.promptTokenPrice1k
+			if (choice.completionTokenPrice1k)
+				label += " / C:🪙" + choice.completionTokenPrice1k
 			return {label, key: choice.name, value: choice.name}
 		})}
 	finally {
