@@ -54,7 +54,12 @@ const wrapClass = computed(() => {
 const text = computed(() => {
   const value = props.text ?? ''
   if (!props.asRawText)
-    return mdi.render(value)
+    return mdi.render(value
+			.replace(/\\\[/g, '\n$$$$')
+			.replace(/\\]/g, '$$$$\n')
+			.replace(/\\\(/g, '$$')
+			.replace(/\\\)/g, '$$')
+		)
   return value
 })
 
