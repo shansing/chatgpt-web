@@ -42,6 +42,7 @@ const kilo = new Decimal('1000')
 const quotaPath : string = process.env.SHANSING_QUOTA_PATH
 const modelChoices : ModelChoice[] = isNotEmptyString(process.env.SHANSING_MODEL_CHOICES) ? JSON.parse(process.env.SHANSING_MODEL_CHOICES) : null
 const quotaEnabled : boolean = quotaPath != null && modelChoices != null
+const prededuction: boolean = process.env.SHANSING_PREDEDUCTION === 'true'
 ;
 
 (async () => {
@@ -133,10 +134,19 @@ async function chatReplyProcess(options: RequestOptions) {
 		if (modelChoice) {
 			processApi = modelChoice.api
 			options.completionParams.model = modelChoice.model
-			if (!prePay(username, modelChoice)) {
-				globalThis.console.error(username + "'s quota is not enough, need " + modelChoice.maxPrice);
-				return sendResponse({ type: 'Fail', message: '[Shansing Helper] Insufficient pre-deduction quota, need 🪙' + modelChoice.maxPrice + ' | 预扣费余额不足，需要🪙' + modelChoice.maxPrice})
+
+			if (prededuction) {
+				if (!prePay(username, modelChoice)) {
+					globalThis.console.error(username + "'s quota is not enough, need " + modelChoice.maxPrice);
+					return sendResponse({ type: 'Fail', message: '[Shansing Helper] Insufficient pre-deduction quota, need 🪙' + modelChoice.maxPrice + ' | 预扣费余额不足，需要🪙' + modelChoice.maxPrice})
+				}
+			} else {
+				if (readUserQuota(username).lessThanOrEqualTo(0)) {
+					globalThis.console.error(username + "'s quota is not enough");
+					return sendResponse({ type: 'Fail', message: '[Shansing Helper] Insufficient quota | 余额不足'})
+				}
 			}
+
 		}
     const response = await processApi.sendMessage(message, {
       ...options,
@@ -144,7 +154,12 @@ async function chatReplyProcess(options: RequestOptions) {
         process?.(partialResponse)
       },
     })
-		payback(username, response, modelChoice)
+
+		if (prededuction) {
+			payback(username, response, modelChoice)
+		} else {
+			pay(username, response, modelChoice)
+		}
 
     return sendResponse({ type: 'Success', data: response })
   }
@@ -263,24 +278,24 @@ function readUserQuota(username : string) : Decimal {
 		throw error
 	}
 }
-function increaseUserQuota(username : string, delta : Decimal) {
+function increaseUserQuota(username : string, delta : Decimal, allowToNegetive : boolean) {
 	let quota = readUserQuota(username)
 	// globalThis.console.log(username + '\'s old quota: ' + quota.toFixed())
 	let newQuota = quota.plus(delta)
 	// globalThis.console.log(username + '\'s new quota: ' + newQuota.toFixed())
-	if (newQuota.lt(0)) {
+	if (!allowToNegetive && newQuota.lt(0)) {
 		return false;
 	}
 	writeFileSync(quotaPath + '/' + username, newQuota.toFixed(), 'utf8')
 	return true;
 }
-function decreaseUserQuota(username : string, delta : Decimal) {
-	return increaseUserQuota(username, new Decimal(-1).mul(delta))
+function decreaseUserQuota(username : string, delta : Decimal, allowToNonPositive : boolean) {
+	return increaseUserQuota(username, new Decimal(-1).mul(delta), true)
 }
 function prePay(username, modelChoice : ModelChoice) {
 	if (quotaEnabled && username && modelChoice) {
 		// globalThis.console.log('prepay:', 'username', username, 'maxPrice', maxPrice)
-		return decreaseUserQuota(username, new Decimal(modelChoice.maxPrice))
+		return decreaseUserQuota(username, new Decimal(modelChoice.maxPrice), false)
 	}
 	return true
 }
@@ -299,7 +314,19 @@ function payback(username, response : ChatMessage, modelChoice : ModelChoice) {
 			plus = new Decimal(modelChoice.maxPrice)
 		}
 		// globalThis.console.log('payback:', 'username', username, 'plus', plus)
-		increaseUserQuota(username, plus)
+		increaseUserQuota(username, plus, false)
+	}
+}
+function pay(username, response : ChatMessage, modelChoice : ModelChoice) {
+	if (username && quotaEnabled && modelChoice) {
+		globalThis.console.log('response.detail', response.detail)
+		if (response && response.detail && response.detail.usage && response.detail.usage.completion_tokens != null) {
+			let usage = response.detail.usage;
+			let thisBilling = (new Decimal(modelChoice.promptTokenPrice1k).div(kilo).mul(usage.prompt_tokens))
+				.plus(new Decimal(modelChoice.completionTokenPrice1k).div(kilo).mul(usage.completion_tokens))
+			globalThis.console.log('pay:', 'username', username, 'thisBilling', thisBilling)
+			decreaseUserQuota(username, thisBilling, true)
+		}
 	}
 }
 async function getModelChoices() {
