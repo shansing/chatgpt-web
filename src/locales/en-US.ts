@@ -52,7 +52,7 @@ export default {
     clearHistoryConfirm: 'Are you sure to clear chat history?',
     preview: 'Preview',
     showRawText: 'Show as raw text',
-    thinking: 'Thinking...',
+    thinking: '🤔',
   },
   setting: {
     setting: 'Setting',
@@ -76,9 +76,9 @@ export default {
     httpsProxy: 'HTTPS Proxy',
     balance: 'API Balance',
     monthlyUsage: 'Monthly Usage',
-    openSource: 'This project is open sourced at',
-    freeMIT: 'free and based on the MIT license, without any form of paid behavior!',
-    stars: 'If you find this project helpful, please give me a Star on GitHub or give a little sponsorship, thank you!',
+    // openSource: 'This project is open sourced at',
+    // freeMIT: 'free and based on the MIT license, without any form of paid behavior!',
+    // stars: 'If you find this project helpful, please give me a Star on GitHub or give a little sponsorship, thank you!',
   },
   store: {
     siderButton: 'Prompt Store',
