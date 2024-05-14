@@ -30,11 +30,13 @@ export default {
   },
   chat: {
     newChatButton: '新增對話',
-    placeholder: '來說點什麼...（按 Ctrl+Enter 送出，Enter 換行，"/" 觸發提示詞）',
+		newChatTitle: '新增對話',
+    placeholder: '來說點什麼...（Shift + Enter = 換行，"/" 觸發提示詞）',
     placeholderMobile: '來說點什麼...',
     copy: '複製',
     copied: '複製成功',
     copyCode: '複製代碼',
+    copyFailed: '複製失敗',
     clearChat: '清除對話',
     clearChatConfirm: '是否清空對話?',
     exportImage: '儲存對話為圖片',
@@ -50,6 +52,7 @@ export default {
     clearHistoryConfirm: '確定清除紀錄?',
     preview: '預覽',
     showRawText: '顯示原文',
+    thinking: '🤔',
   },
   setting: {
     setting: '設定',
@@ -73,6 +76,9 @@ export default {
     httpsProxy: 'HTTPS Proxy',
     balance: 'API Credit 餘額',
     monthlyUsage: '本月使用量',
+    openSource: '此專案在此開源：',
+    freeMIT: '免費且基於 MIT 授權，沒有任何形式的付費行為！',
+    stars: '如果你覺得此專案對你有幫助，請在 GitHub 上給我一顆星，或者贊助我，謝謝！',
   },
   store: {
     siderButton: '提示詞商店',
