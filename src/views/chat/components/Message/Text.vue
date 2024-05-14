@@ -58,7 +58,7 @@ const text = computed(() => {
 			.replace(/\\\[/g, '\n$$$$')
 			.replace(/\\]/g, '$$$$\n')
 			.replace(/\\\( /g, '$$')
-			.replace(/\\\) /g, '$$')
+			.replace(/ \\\)/g, '$$')
 			.replace(/\\\(/g, '$$')
 			.replace(/\\\)/g, '$$')
 		)
