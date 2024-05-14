@@ -16,7 +16,7 @@ const temperature = ref(settingStore.temperature ?? 0.5)
 
 const top_p = ref(settingStore.top_p ?? 1)
 
-const modelName = ref(settingStore.modelName ?? 'GPT-4')
+const modelName = ref(settingStore.modelName ?? 'GPT-4o')
 
 const modelNameOptions: Ref<{ label: string; key: string; value: string }[]> = ref([])
 

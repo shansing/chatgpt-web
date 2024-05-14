@@ -57,6 +57,8 @@ const text = computed(() => {
     return mdi.render(value
 			.replace(/\\\[/g, '\n$$$$')
 			.replace(/\\]/g, '$$$$\n')
+			.replace(/\\\( /g, '$$')
+			.replace(/\\\) /g, '$$')
 			.replace(/\\\(/g, '$$')
 			.replace(/\\\)/g, '$$')
 		)
